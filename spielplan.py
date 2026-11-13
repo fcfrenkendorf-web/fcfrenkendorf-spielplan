@@ -1,23 +1,34 @@
-name: FC Frenkendorf Spielplan
+import urllib.request
+import urllib.error
 
-on:
-  workflow_dispatch:
+URL = (
+    "https://matchcenter.fvnws.ch/"
+    "default.aspx?v=494&oid=8&lng=1&a=vs"
+)
 
-permissions:
-  contents: read
+try:
+    request = urllib.request.Request(
+        URL,
+        headers={
+            "User-Agent": "FCFrenkendorf-Spielplan/1.0"
+        }
+    )
 
-jobs:
-  spielplan-test:
-    runs-on: ubuntu-latest
+    with urllib.request.urlopen(
+        request, timeout=20
+    ) as response:
+        html = response.read().decode(
+            "utf-8", errors="replace"
+        )
 
-    steps:
-      - name: Projekt laden
-        uses: actions/checkout@v4
+    print("Verbindung erfolgreich")
+    print("HTML-Zeichen:", len(html))
+    print(
+        "Spielplanstruktur gefunden:",
+        "spTitel" in html
+        and "row spiel" in html
+    )
 
-      - name: Python einrichten
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: FVNWS-Verbindung testen
-        run: python spielplan.py
+except (urllib.error.URLError, TimeoutError) as e:
+    print("Verbindung fehlgeschlagen:", e)
+    raise
