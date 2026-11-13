@@ -1,0 +1,23 @@
+name: FC Frenkendorf Spielplan
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */2 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  spielplan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Projekt laden
+        uses: actions/checkout@v4
+
+      - name: Test der Automatisierung
+        run: |
+          echo "FC Frenkendorf"
+          echo "Automatisierung funktioniert"
+          date -u
